@@ -3,14 +3,14 @@
 [![npm version](https://badge.fury.io/js/weapp-qrcode.svg)](https://badge.fury.io/js/weapp-qrcode)
 [![change-log](https://img.shields.io/badge/changelog-md-blue.svg)](https://github.com/yingye/weapp-qrcode/blob/master/CHANGELOG.md)
 
-weapp.qrcode.js 在 微信小程序 中，快速生成二维码
+weapp.qrcode.js 在 微信小程序 中，快速生成二维码，只支持微信2.9.0之后的新版本
 
 ## Usage
 
-先在 wxml 文件中，创建绘制的 `canvas`，并定义好 `width`, `height`, `canvasId` 。
+先在 wxml 文件中，创建绘制的 `canvas`，并定义好 `width`, `height`, `id` 。
 
 ```html
-<canvas type="2d" id="myqrcode" style="width:300px;height:400px;"></canvas>
+<canvas type="2d" id="myQrcode" style="width:300px;height:400px;"></canvas>
 ```
 
 直接引入 js 文件，使用 `drawQrcode()` 绘制二维码。!!!在 调用 `drawQrcode()` 方法之前，一定要确保可以获取到 `canvas context` 。
@@ -24,8 +24,8 @@ import drawQrcode from '../../utils/weapp.qrcode.esm.js'
 drawQrcode({
   width: 200,
   height: 200,
-  Id: 'myQrcode',
-  // ctx: wx.createCanvasContext('myQrcode'),
+  id: 'myQrcode',
+  // ctx: wx.createSelectorQuery(),
   text: 'https://github.com/yingye',
   // v1.0.0+版本支持在二维码上绘制图片
   image: {
@@ -50,7 +50,7 @@ import drawQrcode from 'weapp-qrcode'
 drawQrcode({
   width: 200,
   height: 200,
-  canvasId: 'myQrcode',
+  id: 'myQrcode',
   text: 'https://github.com/yingye'
 })
 ```
@@ -73,10 +73,13 @@ Type: Object
 | ------ | ------ | ------ |
 | width | 必须，二维码宽度，与`canvas`的`width`保持一致 | 200 |
 | height | 必须，二维码高度，与`canvas`的`height`保持一致 | 200 |
-| Id | 非必须，canvas元素的`id` | `'myQrcode'` |
+| id | 非必须，canvas元素的`id` | `'myQrcode'` |
 | ctx | 非必须，绘图上下文，可通过 `wx.createSelectorQuery()` 获取，v2.9.0+版本支持 | `'wx.createSelectorQuery()'` |
 | text | 必须，二维码内容 | 'https://github.com/yingye' |
 | typeNumber | 非必须，二维码的计算模式，默认值-1 | 8 |
+| correctLevel | 非必须，二维码纠错级别，默认值为高级，取值：`{ L: 1, M: 0, Q: 3, H: 2 }` | 1 |
+| drawBg | 非必须，是否绘制画布背景，默认值为false，取值：true OR false | false |
+| bgColor | 非必须，绘制画布背景的颜色，默认值为`'#ffffff'` | `#ffffff` |
 | correctLevel | 非必须，二维码纠错级别，默认值为高级，取值：`{ L: 1, M: 0, Q: 3, H: 2 }` | 1 |
 | background | 非必须，二维码背景颜色，默认值白色 | `'#ffffff'` |
 | foreground | 非必须，二维码前景色，默认值黑色 | `'#000000'` |

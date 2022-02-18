@@ -34,6 +34,8 @@ function drawQrcode (options) {
     y: 0,
     typeNumber: -1,
     correctLevel: QRErrorCorrectLevel.H,
+    drawBg: false,
+    bgColor: '#ffffff',
     background: '#ffffff',
     foreground: '#000000',
     image: {
@@ -45,14 +47,14 @@ function drawQrcode (options) {
     }
   }, options)
 
-  if (!options.canvasId && !options.ctx) {
+  if (!options.id && !options.ctx) {
     console.warn('please set canvasId or ctx!')
     return
   }
 
   createCanvas()
 
-  function createCanvas () {
+  async function createCanvas () {
     // create the qrcode itself
     var qrcode = new QRCode(options.typeNumber, options.correctLevel)
     qrcode.addData(utf16to8(options.text))
@@ -63,17 +65,24 @@ function drawQrcode (options) {
     if (options.ctx) {
       ctx = options.ctx
     } else {
-      wx.createSelectorQuery().select(options.Id).node().exec((res) => {
-        var canvas = res[0].node
-        ctx = canvas.getContext('2d')
-
-        var dpr = wx.getSystemInfoSync().pixelRatio
-        canvas.width = res[0].width * dpr
-        canvas.height = res[0].height * dpr
-        ctx.scale(dpr, dpr)
+      ctx = await new Promise((resolve) => {
+        wx.createSelectorQuery().select(options.id).fields({ node: true, size: true }).exec((res) => {
+          var dpr = wx.getSystemInfoSync().pixelRatio
+          var canvas = res[0].node
+          canvas.width = res[0].width * dpr
+          canvas.height = res[0].height * dpr
+          console.log(canvas)
+          ctx = canvas.getContext('2d')
+          ctx.scale(dpr, dpr)
+          if (options.drawBg) {
+            ctx.fillStyle = options.bgColor
+            ctx.fillRect(0, 0, res[0].width, res[0].height)
+          }
+          resolve(ctx)
+        })
       })
     }
-
+    console.log(ctx)
     // compute tileW/tileH based on options.width/options.height
     var tileW = options.width / qrcode.getModuleCount()
     var tileH = options.height / qrcode.getModuleCount()
