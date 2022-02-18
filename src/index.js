@@ -63,7 +63,15 @@ function drawQrcode (options) {
     if (options.ctx) {
       ctx = options.ctx
     } else {
-      ctx = options._this ? wx.createCanvasContext && wx.createCanvasContext(options.canvasId, options._this) : wx.createCanvasContext && wx.createCanvasContext(options.canvasId)
+      wx.createSelectorQuery().select(options.Id).node().exec((res) => {
+        var canvas = res[0].node
+        ctx = canvas.getContext('2d')
+
+        var dpr = wx.getSystemInfoSync().pixelRatio
+        canvas.width = res[0].width * dpr
+        canvas.height = res[0].height * dpr
+        ctx.scale(dpr, dpr)
+      })
     }
 
     // compute tileW/tileH based on options.width/options.height
@@ -74,7 +82,8 @@ function drawQrcode (options) {
     for (var row = 0; row < qrcode.getModuleCount(); row++) {
       for (var col = 0; col < qrcode.getModuleCount(); col++) {
         var style = qrcode.isDark(row, col) ? options.foreground : options.background
-        ctx.setFillStyle(style)
+        // ctx.setFillStyle(style)
+        ctx.fillStyle = style
         var w = (Math.ceil((col + 1) * tileW) - Math.floor(col * tileW))
         var h = (Math.ceil((row + 1) * tileW) - Math.floor(row * tileW))
         ctx.fillRect(Math.round(col * tileW) + options.x, Math.round(row * tileH) + options.y, w, h)
@@ -85,9 +94,9 @@ function drawQrcode (options) {
       ctx.drawImage(options.image.imageResource, options.image.dx, options.image.dy, options.image.dWidth, options.image.dHeight)
     }
 
-    ctx.draw(false, function (e) {
-      options.callback && options.callback(e)
-    })
+    if (options.callback) {
+      options.callback(ctx)
+    }
   }
 }
 
