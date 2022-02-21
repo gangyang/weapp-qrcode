@@ -61,28 +61,36 @@ function drawQrcode (options) {
     qrcode.make()
 
     // get canvas context
-    var ctx
+    var ctx, canvas
     if (options.ctx) {
       ctx = options.ctx
     } else {
-      ctx = await new Promise((resolve) => {
-        wx.createSelectorQuery().select(options.id).fields({ node: true, size: true }).exec((res) => {
+      var r = await new Promise((resolve) => {
+        options.id = options.id.search(/^#/) === 0 ? options.id : '#' + options.id
+        var query = wx.createSelectorQuery()
+        if (options._this) {
+          query = options._this.createSelectorQuery()
+        }
+        query.select(options.id).fields({ node: true, size: true }).exec((res) => {
           var dpr = wx.getSystemInfoSync().pixelRatio
           var canvas = res[0].node
           canvas.width = res[0].width * dpr
           canvas.height = res[0].height * dpr
-          console.log(canvas)
-          ctx = canvas.getContext('2d')
+          var ctx = canvas.getContext('2d')
           ctx.scale(dpr, dpr)
           if (options.drawBg) {
             ctx.fillStyle = options.bgColor
             ctx.fillRect(0, 0, res[0].width, res[0].height)
           }
-          resolve(ctx)
+          resolve({
+            ctx: ctx,
+            canvas: canvas
+          })
         })
       })
+      ctx = r.ctx
+      canvas = r.canvas
     }
-    console.log(ctx)
     // compute tileW/tileH based on options.width/options.height
     var tileW = options.width / qrcode.getModuleCount()
     var tileH = options.height / qrcode.getModuleCount()
@@ -104,7 +112,7 @@ function drawQrcode (options) {
     }
 
     if (options.callback) {
-      options.callback(ctx)
+      options.callback(ctx, canvas)
     }
   }
 }
