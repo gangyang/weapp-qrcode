@@ -38,6 +38,7 @@ function drawQrcode (options) {
     bgColor: '#ffffff',
     background: '#ffffff',
     foreground: '#000000',
+    scale: '',
     image: {
       imageResource: '',
       dx: 0,
@@ -72,7 +73,12 @@ function drawQrcode (options) {
           query = options._this.createSelectorQuery()
         }
         query.select(options.id).fields({ node: true, size: true }).exec((res) => {
-          var dpr = wx.getSystemInfoSync().pixelRatio
+          var dpr = 1
+          if (options.scale) {
+            dpr = options.scale
+          } else {
+            dpr = wx.getSystemInfoSync().pixelRatio
+          }
           var canvas = res[0].node
           canvas.width = res[0].width * dpr
           canvas.height = res[0].height * dpr

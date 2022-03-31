@@ -1,6 +1,6 @@
 {
-  "name": "weapp-qrcode",
-  "version": "1.0.0",
+  "name": "@yang-gang/weapp-qrcode",
+  "version": "1.0.2",
   "description": "generate qrcode in weapp",
   "main": "dist/weapp.qrcode.common.js",
   "module": "dist/weapp.qrcode.esm.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yingye/weapp-qrcode.git"
+    "url": "git+https://github.com/gangyang/weapp-qrcode.git"
   },
   "keywords": [
     "wechat",
